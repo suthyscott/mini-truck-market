@@ -41,7 +41,34 @@ module.exports = {
             res.status(400).send('Error registering')
         }
     },
-    login: (req, res) => {
-        console.log('login')
+    login: async (req, res) => {
+        try {   
+            const {password, email} = req.body
+            let foundUser = await Users.findOne({where: {email}})
+
+            if(foundUser){
+                const isAuthenticated = bcrypt.compareSync(password, foundUser.hashedPassword)
+
+                if(isAuthenticated){
+                    const token = createToken(foundUser.email, foundUser.id)
+                    const exp = Date.now() + 1000 * 60 * 60 * 48
+
+                    res.status(200).send({
+                        email: foundUser.email,
+                        userId: foundUser.id,
+                        token,
+                        exp
+                    })
+                } else {
+                    res.status(400).send('That password is incorrect')
+                }
+            } else {
+                res.status(400).send('There is no user with that email.')
+            }
+
+        } catch(theseHands) {
+            console.log(theseHands)
+            res.status(400).send('Error registering')
+        }
     }
 }
