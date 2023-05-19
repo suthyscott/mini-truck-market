@@ -1,8 +1,11 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
+import AuthContext from "../store/authContext"
 
 const Home = () => {
     const [trucks, setTrucks] = useState([])
+    const authCtx = useContext(AuthContext)
 
+    console.log(authCtx)
     return (
         <div>
             {trucks.length > 0 ? (
